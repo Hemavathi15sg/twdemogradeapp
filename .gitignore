@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+gradeapp
 
 # Test files
 *.test
