@@ -9,6 +9,7 @@ gradeapp
 # Test files
 *.test
 *.out
+test_*.sh
 
 # Dependencies
 vendor/
