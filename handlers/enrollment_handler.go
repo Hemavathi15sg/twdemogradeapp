@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"grademanagement-demo/middleware"
 	"grademanagement-demo/models"
 	"grademanagement-demo/repository"
 	"net/http"
@@ -72,6 +73,7 @@ func (h *EnrollmentHandler) CreateEnrollment(w http.ResponseWriter, r *http.Requ
 	created := h.repo.Create(enrollment)
 
 	w.Header().Set("Content-Type", "application/json")
+	middleware.SetCacheHeader(w, middleware.CacheUpdate, 5*time.Minute)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(created)
 }
@@ -98,6 +100,7 @@ func (h *EnrollmentHandler) GetEnrollment(w http.ResponseWriter, r *http.Request
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	middleware.SetCacheHeader(w, middleware.CacheHit, 5*time.Minute)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(enrollment)
 }
@@ -106,6 +109,7 @@ func (h *EnrollmentHandler) GetEnrollment(w http.ResponseWriter, r *http.Request
 func (h *EnrollmentHandler) ListEnrollments(w http.ResponseWriter, r *http.Request) {
 	enrollments := h.repo.GetAll()
 
+	middleware.SetCacheHeader(w, middleware.CacheHit, 5*time.Minute)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(enrollments)
@@ -147,6 +151,7 @@ func (h *EnrollmentHandler) UpdateEnrollment(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	middleware.SetCacheHeader(w, middleware.CacheUpdate, 5*time.Minute)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(updated)
@@ -171,6 +176,7 @@ func (h *EnrollmentHandler) DeleteEnrollment(w http.ResponseWriter, r *http.Requ
 		json.NewEncoder(w).Encode(map[string]string{"error": "enrollment not found"})
 		return
 	}
+	middleware.SetCacheHeader(w, middleware.CacheDelete)
 
 	w.WriteHeader(http.StatusNoContent)
 }

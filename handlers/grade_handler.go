@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"grademanagement-demo/middleware"
 	"grademanagement-demo/models"
 	"grademanagement-demo/repository"
 	"net/http"
@@ -75,6 +76,7 @@ func (h *GradeHandler) CreateGrade(w http.ResponseWriter, r *http.Request) {
 	created := h.repo.Create(grade)
 
 	w.Header().Set("Content-Type", "application/json")
+	middleware.SetCacheHeader(w, middleware.CacheUpdate, 5*time.Minute)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(created)
 }
@@ -101,6 +103,7 @@ func (h *GradeHandler) GetGrade(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	middleware.SetCacheHeader(w, middleware.CacheHit, 5*time.Minute)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(grade)
 }
@@ -110,6 +113,7 @@ func (h *GradeHandler) ListGrades(w http.ResponseWriter, r *http.Request) {
 	grades := h.repo.GetAll()
 
 	w.Header().Set("Content-Type", "application/json")
+	middleware.SetCacheHeader(w, middleware.CacheHit, 5*time.Minute)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(grades)
 }
@@ -150,6 +154,7 @@ func (h *GradeHandler) UpdateGrade(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	middleware.SetCacheHeader(w, middleware.CacheUpdate, 5*time.Minute)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(updated)
@@ -174,6 +179,7 @@ func (h *GradeHandler) DeleteGrade(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"error": "grade not found"})
 		return
 	}
+	middleware.SetCacheHeader(w, middleware.CacheDelete)
 
 	w.WriteHeader(http.StatusNoContent)
 }
